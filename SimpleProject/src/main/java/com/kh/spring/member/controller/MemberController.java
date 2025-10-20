@@ -1,8 +1,15 @@
 package com.kh.spring.member.controller;
 
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kh.spring.member.model.dto.MemberDTO;
 import com.kh.spring.member.model.service.MemberService;
@@ -85,9 +92,14 @@ public class MemberController {
 		this.memberService = memberService;
 	}
 	
-	@RequestMapping("login")
-	public String login(/*@ModelAttribute*/ MemberDTO member) {
-//		System.out.println("로그인 시 입력한 정보 : "+ member);
+	
+/*
+ * @RequestMapping("login")
+	public String login(@ModelAttribute MemberDTO member,
+						//HttpServletRequest request
+						HttpSession session,
+						Model model) {
+		//		System.out.println("로그인 시 입력한 정보 : "+ member);
 		log.info("Member객체 필드값 확인 ~{}", member);		
 		MemberDTO loginMember = memberService.login(member);
 		
@@ -97,8 +109,95 @@ public class MemberController {
 			log.info("실패");
 		}
 		
-		return "main";
+		if(loginMember != null) {
+			
+			//sessionScope에 저장된 사용자의 정보를 담아줌
+			session.setAttribute("loginMember", loginMember);
+			// 포워딩 방식보다는 sendRedirect
+			// localhost/spring
+			
+			return "redirect:/";
+			
+		} else { // 실패했을 떄
+			
+			model.addAttribute("msg","로그인 실패!");
+			
+			
+			//forwarding
+			// WEB-INF/views/
+			// .jsp
+			
+			// WEB-INF/views/include/error_page.jsp
+			
+			return "include/error_page";
+			
+		}
 		
+		//return "main";
+		
+	}
+ */
+	
+	// 두 번째 방법 : 반환타입 ModelAndView타입으로 반환
+	@PostMapping("/login")
+	public ModelAndView login(MemberDTO member, 
+							  HttpSession session,
+							  ModelAndView mv) {
+		
+		MemberDTO loginMember = memberService.login(member);
+		// ModelAndView mv = new ModelAndView();
+		
+		if(loginMember != null) {
+			session.setAttribute("loginMember", loginMember);
+			mv.setViewName("redirect:/");
+		} else {
+			mv.addObject("msg","로그인실패!").setViewName("include/error_page");
+		}
+		
+		return mv;
+	}
+	
+	//CRUD
+	//INSERT --> POST -----> /member
+	//SELECT --> GET
+	
+	//UPDATE
+	//DELETE
+	
+	@GetMapping("/logout")
+	public String logout(HttpSession session) {
+		session.removeAttribute("loginMember");
+		return "redircet:/";
+	}
+	
+	// 회원가입
+	@GetMapping("join")
+	public String joinForm() {
+		// 포워딩할 JSP파일의 논리적인 경로
+		// /WEB-INF/views/	member/signup	.jsp
+		
+		return "member/signup";
+		
+	}
+	
+	@PostMapping("signup")
+	public String signup(MemberDTO member
+						,HttpServletRequest request
+						) {
+		// 아이디, 비밀번호, 이름, 이메일
+		
+		/*
+		try {
+			request.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		*/
+		
+		
+		log.info("{}", member);
+		memberService.signUp(member);
+		return "redirect:join";
 	}
 
 }
