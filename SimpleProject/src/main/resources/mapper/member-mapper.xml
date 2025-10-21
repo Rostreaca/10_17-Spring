@@ -6,18 +6,35 @@
  
  	<select id="login" resultType="com.kh.spring.member.model.dto.MemberDTO">
  	   SELECT
- 				        USER_ID userID
- 				      , USER_PWD userPwd
- 				      , USER_NAME userName
- 				      , EMAIL
- 				      , ENROLL_DATE enrollDate
- 		  FROM
- 		   			   MEMBER
- 	   WHERE 
- 	   				   USER_ID = #{userId}
- 	   		 AND
- 	   		           USER_PWD = #{userPwd}
+ 		      USER_ID userID
+ 		    , USER_PWD userPwd
+ 		    , USER_NAME userName
+ 		    , EMAIL
+ 		    , ENROLL_DATE enrollDate
+ 		 FROM
+ 		 	  MEMBER
+ 	    WHERE 
+ 	   		  USER_ID = #{userId}
+ 	   		  <!--
+ 	      AND
+ 	      	  USER_PWD = #{userPwd}
+ 	      	  -->
  	
  	</select>
-  
+ 	
+  	<insert id="signup"
+  			parameterType="com.kh.spring.member.model.dto.MemberDTO">
+  			
+  			INSERT 
+  		 	  INTO
+  				   MEMBER
+  			VALUES
+                   (
+                   #{userId}
+                 , #{userPwd}
+                 , #{userName}
+                 , #{email}
+                 , SYSDATE
+                   )
+  	</insert>
 </mapper>
