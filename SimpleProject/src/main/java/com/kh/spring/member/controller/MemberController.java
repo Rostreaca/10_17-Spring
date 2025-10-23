@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.kh.spring.board.model.dto.BoardDTO;
 import com.kh.spring.member.model.dto.MemberDTO;
 import com.kh.spring.member.model.service.MemberService;
 
@@ -253,5 +254,6 @@ public class MemberController {
 		session.removeAttribute("loginMember");
 		return "redirect:/";
 	}
+	
 
 }
